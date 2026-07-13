@@ -8,7 +8,7 @@ export const register = async (req,res)=>{
 
     //HASH THE PASSWORD
 
-    const hashedPassword = await bcrypt.hash(password,10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword)
     //CREATE A NEW USER AND SAVE IT TO DB
     console.log(req.body);
@@ -56,11 +56,14 @@ const age = 1000 * 60 * 60 * 24 * 7;
 
      const token = jwt.sign(
         {
-        id:user.id
+        id:user.id,
+        isAdmin: true,
         },
         process.env.JWT_SECRET_KEY,
         {expiresIn:age}
     );
+    const {password: userPassword, ...userInfo} = user;
+
 
     res
     .cookie("token", token, {
@@ -69,7 +72,7 @@ const age = 1000 * 60 * 60 * 24 * 7;
         maxAge:age,
     })
     .status(200)
-    .json({message:"login Sucessful"});
+    .json(userInfo);
     }catch (err){
         console.log(err)
         res.status(500).json({message:"FAILED TO LOGIN!!"})
